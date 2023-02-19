@@ -1,4 +1,4 @@
-package com.bookify.BookifyApi;
+package test.java.com.bookify.BookifyApi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
