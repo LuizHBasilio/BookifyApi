@@ -1,27 +1,24 @@
 package main.java.com.bookify.BookifyApi;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import main.java.com.bookify.BookifyApi.model.Book;
 import main.java.com.bookify.BookifyApi.service.BookService;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @RestController
+@RequestMapping("/bookify/api/v1/books")
 public class BookifyApiApplication {
 	
 	static BookService bookService = new BookService();
@@ -30,12 +27,27 @@ public class BookifyApiApplication {
 		SpringApplication.run(BookifyApiApplication.class, args);
 	}
 	
-	private static final Logger LOG = Logger.getLogger("SystemLog");
+	@GetMapping
+	public List<Book> getAllBooks() {
+		return bookService.getAllBooks();
+	}
 	
-	@GetMapping("/bookify/api/v1/books")
-    public List<Book> handleMockGetRequest(HttpServletRequest request)
-    {
-       return bookService.getAllBooks();
-    }
-
+	@GetMapping("/{bookId}")
+	public ResponseEntity<Book> getBook(@PathVariable String bookId) {
+		Book book = bookService.getBookById(bookId);		
+		if (book == null) {
+			return ResponseEntity.notFound().build();
+		} else {
+			return ResponseEntity.ok(book);
+		}
+	}
+	
+	@PostMapping
+	public ResponseEntity<Book> addBook(@RequestBody Book book) {
+		boolean keyExists = bookService.keyAlreadyExists(book.getId());
+		if (keyExists) {
+			return ResponseEntity.badRequest().build();
+		}
+		return ResponseEntity.ok(bookService.addBook(book));		
+	}
 }

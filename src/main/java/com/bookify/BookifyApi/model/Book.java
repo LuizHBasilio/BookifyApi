@@ -9,8 +9,7 @@ public class Book {
     private String publisher;
     private String genre;
     
-    public Book() {
-    	
+    public Book() {   	
     }
     
     public Book(long pId, String pTitle, String pAuthor, String pISBN, String pPublisher, String pGenre) {
