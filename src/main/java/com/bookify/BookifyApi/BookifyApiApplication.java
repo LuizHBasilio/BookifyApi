@@ -4,10 +4,12 @@ import java.util.List;
 
 import main.java.com.bookify.BookifyApi.model.Book;
 import main.java.com.bookify.BookifyApi.service.BookService;
+import net.bytebuddy.agent.VirtualMachine.ForHotSpot.Connection.Response;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,4 +64,13 @@ public class BookifyApiApplication {
 	    return ResponseEntity.ok(bookService.updateBook(book));
 	}
 	
+	@DeleteMapping("/{bookId}")
+	public ResponseEntity<Void> deleteBook(@PathVariable Long bookId) {
+		 boolean keyExists = bookService.keyAlreadyExists(bookId);
+		    if (!keyExists) {
+		        return ResponseEntity.notFound().build();
+		    }
+		    bookService.deleteBook(bookId);
+		    return ResponseEntity.noContent().build();
+	}
 }
