@@ -1,5 +1,7 @@
 package main.java.com.bookify.BookifyApi.service;
 
+import static org.mockito.ArgumentMatchers.notNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,5 +49,13 @@ public class BookService {
 		}
 		books.put(getNextId(), book);
 		return book;
+	}
+
+	public Book updateBook(Book book) {
+	    if (book == null || !books.containsKey(book.getId())) {
+	        return null;
+	    }
+	    books.put(book.getId(), book);
+	    return book;
 	}
 }

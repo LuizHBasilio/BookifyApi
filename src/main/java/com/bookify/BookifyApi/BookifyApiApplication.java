@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,4 +51,15 @@ public class BookifyApiApplication {
 		}
 		return ResponseEntity.ok(bookService.addBook(book));		
 	}
+	
+	@PutMapping("/{bookId}")
+	public ResponseEntity<Book> updateBook(@PathVariable Long bookId, @RequestBody Book book) {
+	    boolean keyExists = bookService.keyAlreadyExists(bookId);
+	    if (!keyExists) {
+	        return ResponseEntity.notFound().build();
+	    }
+	    book.setId(bookId);
+	    return ResponseEntity.ok(bookService.updateBook(book));
+	}
+	
 }
