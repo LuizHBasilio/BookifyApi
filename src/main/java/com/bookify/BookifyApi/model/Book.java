@@ -1,25 +1,25 @@
 package main.java.com.bookify.BookifyApi.model;
 
 public class Book {
-	
+
 	private long id;
 	private String title;
-    private String author;
-    private String ISBN;
-    private String publisher;
-    private String genre;
-    
-    public Book() {   	
-    }
-    
-    public Book(long pId, String pTitle, String pAuthor, String pISBN, String pPublisher, String pGenre) {
-        id = pId;
-    	title = pTitle;
-        author = pAuthor;
-        ISBN = pISBN;
-        publisher = pPublisher;
-        genre = pGenre;
-    }
+	private String author;
+	private String ISBN;
+	private String publisher;
+	private String genre;
+
+	public Book() {
+	}
+
+	public Book(long pId, String pTitle, String pAuthor, String pISBN, String pPublisher, String pGenre) {
+		id = pId;
+		title = pTitle;
+		author = pAuthor;
+		ISBN = pISBN;
+		publisher = pPublisher;
+		genre = pGenre;
+	}
 
 	public long getId() {
 		return id;
@@ -68,5 +68,5 @@ public class Book {
 	public void setGenre(String genre) {
 		this.genre = genre;
 	}
-    
+
 }

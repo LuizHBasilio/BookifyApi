@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @SpringBootApplication
 @RestController
 @RequestMapping("/bookify/api/v1/books")
-public class BookifyApiApplication {
+public class BookifyApiController {
 
 	/**
 	 * The BookService instance used to perform CRUD operations on the Book objects.
@@ -34,7 +34,7 @@ public class BookifyApiApplication {
 	static BookService bookService = new BookService();
 
 	public static void main(String[] args) {
-		SpringApplication.run(BookifyApiApplication.class, args);
+		SpringApplication.run(BookifyApiController.class, args);
 	}
 
 	/**
@@ -56,11 +56,11 @@ public class BookifyApiApplication {
 	 */
 	@GetMapping("/{bookId}")
 	public ResponseEntity<Book> getBook(@PathVariable Long bookId) {
-		Book book = bookService.getBookById(bookId);
-		if (book == null) {
-			return ResponseEntity.notFound().build();
-		} else {
+		try {
+			Book book = bookService.getBookById(bookId);
 			return ResponseEntity.ok(book);
+		} catch (RuntimeException ex) {
+			return ResponseEntity.notFound().build();
 		}
 	}
 
@@ -73,11 +73,12 @@ public class BookifyApiApplication {
 	 */
 	@PostMapping
 	public ResponseEntity<Book> addBook(@RequestBody Book book) {
-		boolean keyExists = bookService.keyAlreadyExists(book.getId());
-		if (keyExists) {
+		try {
+			Book addBook = bookService.addBook(book);
+			return ResponseEntity.ok(bookService.addBook(addBook));
+		} catch (RuntimeException ex) {
 			return ResponseEntity.badRequest().build();
 		}
-		return ResponseEntity.ok(bookService.addBook(book));
 	}
 
 	/**
@@ -90,12 +91,13 @@ public class BookifyApiApplication {
 	 */
 	@PutMapping("/{bookId}")
 	public ResponseEntity<Book> updateBook(@PathVariable Long bookId, @RequestBody Book book) {
-		boolean keyExists = bookService.keyAlreadyExists(bookId);
-		if (!keyExists) {
+		try {
+			book.setId(bookId);
+			Book updateBook = bookService.addBook(book);
+			return ResponseEntity.ok(bookService.updateBook(updateBook));
+		} catch (RuntimeException ex) {
 			return ResponseEntity.notFound().build();
 		}
-		book.setId(bookId);
-		return ResponseEntity.ok(bookService.updateBook(book));
 	}
 
 	/**
@@ -107,11 +109,11 @@ public class BookifyApiApplication {
 	 */
 	@DeleteMapping("/{bookId}")
 	public ResponseEntity<Void> deleteBook(@PathVariable Long bookId) {
-		boolean keyExists = bookService.keyAlreadyExists(bookId);
-		if (!keyExists) {
+		try {
+			bookService.deleteBook(bookId);
+			return ResponseEntity.noContent().build();
+		} catch (RuntimeException ex) {
 			return ResponseEntity.notFound().build();
 		}
-		bookService.deleteBook(bookId);
-		return ResponseEntity.noContent().build();
 	}
 }

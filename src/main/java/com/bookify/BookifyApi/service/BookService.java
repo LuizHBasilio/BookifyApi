@@ -54,7 +54,11 @@ public class BookService {
 	 * @return The Book object with the specified ID or null if it does not exist.
 	 */
 	public Book getBookById(Long bookId) {
-		return books.get(bookId);
+		Book book = books.get(bookId);
+		if (book == null) {
+			throw new RuntimeException("Book not found with id " + bookId);
+		}
+		return book;
 	}
 
 	/**
@@ -74,11 +78,16 @@ public class BookService {
 	 * @return The Book object that was added to the HashMap.
 	 */
 	public Book addBook(Book book) {
+		boolean keyExists = keyAlreadyExists(book.getId());
+		if (keyExists) {
+			throw new RuntimeException("Book with id " + book.getId() + "already exists ");
+		}
 		if (book.getId() == 0) {
 			book.setId(getNextId());
 		}
 		books.put(getNextId(), book);
 		return book;
+
 	}
 
 	/**
@@ -88,6 +97,10 @@ public class BookService {
 	 * @return The Book object that was updated, or null if the book does not exist.
 	 */
 	public Book updateBook(Book book) {
+		boolean keyExists = keyAlreadyExists(book.getId());
+		if (!keyExists) {
+			throw new RuntimeException("Book with id " + book.getId() + "not exists ");
+		}	
 		if (book == null || !books.containsKey(book.getId())) {
 			return null;
 		}
@@ -101,6 +114,10 @@ public class BookService {
 	 * @param bookId The ID of the book to remove.
 	 */
 	public void deleteBook(Long bookId) {
+		boolean keyExists = keyAlreadyExists(bookId);
+		if (!keyExists) {
+			throw new RuntimeException("Book with id " + bookId + "not exists ");
+		}	
 		books.remove(bookId);
 	}
 }
