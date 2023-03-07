@@ -1,9 +1,13 @@
 Bookify API
+
 The Bookify API provides a RESTful API for managing a collection of books. It allows you to retrieve all books, retrieve a specific book by ID, add a new book, update an existing book, and delete a book.
 
 Prerequisites
-Java 8 or higher
+
+Java 11 or higher
+
 Maven
+
 You can access the API at http://localhost:8080/bookify/api/v1/books
 
 API Endpoints
