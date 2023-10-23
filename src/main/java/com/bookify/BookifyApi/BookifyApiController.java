@@ -7,6 +7,7 @@ import main.java.com.bookify.BookifyApi.service.BookService;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,13 +56,8 @@ public class BookifyApiController {
 	 *         status if it is not.
 	 */
 	@GetMapping("/{bookId}")
-	public ResponseEntity<Book> getBook(@PathVariable Long bookId) {
-		try {
-			Book book = bookService.getBookById(bookId);
-			return ResponseEntity.ok(book);
-		} catch (RuntimeException ex) {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<?> getBook(@PathVariable Long bookId) {
+		return bookService.getBookById(bookId);
 	}
 
 	/**
@@ -72,13 +68,8 @@ public class BookifyApiController {
 	 *         unique, or a 400 status if it already exists.
 	 */
 	@PostMapping
-	public ResponseEntity<Book> addBook(@RequestBody Book book) {
-		try {
-			Book addBook = bookService.addBook(book);
-			return ResponseEntity.ok(bookService.addBook(addBook));
-		} catch (RuntimeException ex) {
-			return ResponseEntity.badRequest().build();
-		}
+	public ResponseEntity<?> addBook(@RequestBody Book book) {
+		return ResponseEntity.ok(bookService.addBook(book));
 	}
 
 	/**
@@ -90,14 +81,9 @@ public class BookifyApiController {
 	 *         a 404 status if it does not.
 	 */
 	@PutMapping("/{bookId}")
-	public ResponseEntity<Book> updateBook(@PathVariable Long bookId, @RequestBody Book book) {
-		try {
-			book.setId(bookId);
-			Book updateBook = bookService.addBook(book);
-			return ResponseEntity.ok(bookService.updateBook(updateBook));
-		} catch (RuntimeException ex) {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<?> updateBook(@PathVariable Long bookId, @RequestBody Book book) {
+		book.setId(bookId);
+		return ResponseEntity.ok(bookService.updateBook(book));
 	}
 
 	/**
@@ -108,12 +94,8 @@ public class BookifyApiController {
 	 *         status if it does not exist.
 	 */
 	@DeleteMapping("/{bookId}")
-	public ResponseEntity<Void> deleteBook(@PathVariable Long bookId) {
-		try {
-			bookService.deleteBook(bookId);
-			return ResponseEntity.noContent().build();
-		} catch (RuntimeException ex) {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<?> deleteBook(@PathVariable Long bookId) {
+		return ResponseEntity.ok(bookService.deleteBook(bookId));
+
 	}
 }

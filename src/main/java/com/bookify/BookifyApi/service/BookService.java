@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import main.java.com.bookify.BookifyApi.model.Book;
 
 /**
@@ -53,12 +56,12 @@ public class BookService {
 	 * @param bookId The ID of the book to return.
 	 * @return The Book object with the specified ID or null if it does not exist.
 	 */
-	public Book getBookById(Long bookId) {
+	public ResponseEntity<?> getBookById(Long bookId) {
 		Book book = books.get(bookId);
 		if (book == null) {
-			throw new RuntimeException("Book not found with id " + bookId);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book with id " + bookId + " was not found");
 		}
-		return book;
+		return ResponseEntity.ok(book);
 	}
 
 	/**
@@ -77,16 +80,16 @@ public class BookService {
 	 * @param book The book to add.
 	 * @return The Book object that was added to the HashMap.
 	 */
-	public Book addBook(Book book) {
+	public ResponseEntity<?> addBook(Book book) {
 		boolean keyExists = keyAlreadyExists(book.getId());
 		if (keyExists) {
-			throw new RuntimeException("Book with id " + book.getId() + "already exists ");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Book with this id already exists");
 		}
 		if (book.getId() == 0) {
 			book.setId(getNextId());
 		}
 		books.put(getNextId(), book);
-		return book;
+		return ResponseEntity.ok(book);
 
 	}
 
@@ -96,28 +99,30 @@ public class BookService {
 	 * @param book The Book object to update.
 	 * @return The Book object that was updated, or null if the book does not exist.
 	 */
-	public Book updateBook(Book book) {
+	public ResponseEntity<?> updateBook(Book book) {
 		boolean keyExists = keyAlreadyExists(book.getId());
 		if (!keyExists) {
-			throw new RuntimeException("Book with id " + book.getId() + "not exists ");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book with id " + book.getId() + " was not found");
 		}	
 		if (book == null || !books.containsKey(book.getId())) {
 			return null;
 		}
 		books.put(book.getId(), book);
-		return book;
+		return ResponseEntity.ok(book);
 	}
 
 	/**
 	 * Removes a book from the HashMap.
 	 * 
 	 * @param bookId The ID of the book to remove.
+	 * @return 
 	 */
-	public void deleteBook(Long bookId) {
+	public ResponseEntity<?> deleteBook(Long bookId) {
 		boolean keyExists = keyAlreadyExists(bookId);
 		if (!keyExists) {
-			throw new RuntimeException("Book with id " + bookId + "not exists ");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book with id " + bookId + " was not found");
 		}	
 		books.remove(bookId);
+		return ResponseEntity.ok("Book deleted");
 	}
 }
