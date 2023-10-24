@@ -1,63 +1,70 @@
 package test.java.com.bookify.BookifyApi.service;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.ResponseEntity;
 
 import main.java.com.bookify.BookifyApi.model.Book;
 import main.java.com.bookify.BookifyApi.service.BookService;
 
 public class BookServiceTest {
 
-    private BookService bookService;
+	private BookService bookService;
 
-    @BeforeEach
-    public void setUp() {
-        bookService = new BookService();
-    }
-    @Test
-    public void testGetBookByIdNotFound() {
-        Assertions.assertThrows(RuntimeException.class, () -> bookService.getBookById(4L),
-                "Expected RuntimeException when book is not found");
-    }
+	@BeforeEach
+	public void setUp() {
+		bookService = new BookService();
+	}
 
-    @Test
-    public void testKeyAlreadyExists() {
-        Assertions.assertTrue(bookService.keyAlreadyExists(1L), "Key should already exist");
-    }
+	@Test
+	public void testGetBookByIdNotFound() {
+		ResponseEntity<?> response = bookService.getBookById(4L);
+		assertEquals(404, response.getStatusCodeValue());
+		assertEquals("Book with id 4 was not found", response.getBody());
+	}
 
-    @Test
-    public void testAddBook() {
-        Book newBook = new Book(0, "To Kill a Mockingbird", "Harper Lee", "9780446310789", "Grand Central Publishing",
-                "Fiction");
-        Book addedBook = bookService.addBook(newBook);
-        Assertions.assertNotNull(addedBook, "Added book should not be null");
-        Assertions.assertEquals("To Kill a Mockingbird", addedBook.getTitle(), "To Kill a Mockingbird");
-    }
+	@Test
+	public void testKeyAlreadyExists() {
+		Assertions.assertTrue(bookService.keyAlreadyExists(1L), "Key should already exist");
+	}
 
-    @Test
-    public void testAddBookWithExistingId() {
-        Book existingBook = bookService.getBookById(1L);
-        Assertions.assertThrows(RuntimeException.class, () -> bookService.addBook(existingBook),
-                "Expected RuntimeException when adding book with existing ID");
-    }
+	@Test
+	public void testAddBook() {
+		Book newBook = new Book(0L, "New Book", "Author", "ISBN123", "Publisher", "Genre");
+		ResponseEntity<?> response = bookService.addBook(newBook);
+		assertEquals(200, response.getStatusCodeValue());
+		Book addedBook = (Book) response.getBody();
+		assertNotNull(addedBook.getId());
+	}
 
-    @Test
-    public void testUpdateBook() {
-        Book bookToUpdate = bookService.getBookById(1L);
-        bookToUpdate.setTitle("New Title");
-        Book updatedBook = bookService.updateBook(bookToUpdate);
-        Assertions.assertNotNull(updatedBook, "Updated book should not be null");
-        Assertions.assertEquals("New Title", bookService.getBookById(1L).getTitle(),
-                "Book title should be 'New Title'");
-    }
+	@Test
+	public void testAddBookWithExistingId() {
+		Book existingBook = new Book(1L, "New Book", "Author", "ISBN123", "Publisher", "Genre");
+		ResponseEntity<?> response = bookService.addBook(existingBook);
+		assertEquals(400, response.getStatusCodeValue());
+		assertEquals("Book with this id already exists", response.getBody());
+	}
 
-    @Test
-    public void testUpdateBookNotFound() {
-        Book nonExistingBook = new Book(122L, "The Catcher in the Rye", "J.D. Salinger", "9780316769174", "Back Bay Books",
-                "Fiction");
-        Assertions.assertThrows(RuntimeException.class, () -> bookService.updateBook(nonExistingBook),
-                "Expected RuntimeException when updating non-existing book");
-    }
+	@Test
+	public void testUpdateBook() {
+		Book bookToUpdate = new Book(1L, "Updated Title", "Updated Author", "Updated ISBN", "Updated Publisher",
+				"Updated Genre");
+		ResponseEntity<?> response = bookService.updateBook(bookToUpdate);
+		assertEquals(200, response.getStatusCodeValue());
+		Book updatedBook = (Book) response.getBody();
+		assertEquals("Updated Title", updatedBook.getTitle());
+		assertEquals("Updated Author", updatedBook.getAuthor());
+	}
+
+	@Test
+	public void testDeleteBook() {
+		ResponseEntity<?> response = bookService.deleteBook(1L);
+		assertEquals(200, response.getStatusCodeValue());
+		assertEquals("Book deleted", response.getBody());
+	}
 
 }
